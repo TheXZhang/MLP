@@ -13,8 +13,10 @@ respect to the layer parameters.
 """
 
 import numpy as np
+import scipy.signal
 import mlp.initialisers as init
 from mlp import DEFAULT_SEED
+
 
 
 class Layer(object):
@@ -449,7 +451,20 @@ class ConvolutionalLayer(LayerWithParameters):
         Returns:
             outputs: Array of layer outputs of shape (batch_size, num_output_channels, output_height, output_width).
         """
-        raise NotImplementedError
+        temp_matrix=np.zeros((3,3))
+        result=np.zeros((2,2,3,3))
+        for i in range(inputs.shape[0]):
+            for j in range(inputs.shape[0]):
+                for k in range(inputs.shape[1]):
+                    temp_matrix += scipy.signal.convolve2d(inputs[i][k],self.kernels[j][k],mode="valid")
+                temp_matrix+=self.biases[j]
+                result[i][j]=temp_matrix
+                temp_matrix=np.zeros((3,3))
+        return result
+
+
+
+
 
     def bprop(self, inputs, outputs, grads_wrt_outputs):
         """Back propagates gradients through a layer.
@@ -469,7 +484,16 @@ class ConvolutionalLayer(LayerWithParameters):
             (batch_size, num_input_channels, input_height, input_width).
         """
         # Pad the grads_wrt_outputs
-        raise NotImplementedError
+        temp_matrix=np.zeros((3,3))
+        result=np.zeros((2,2,3,3))
+        for i in range(inputs.shape[0]):
+            for j in range(inputs.shape[0]):
+                for k in range(inputs.shape[1]):
+                    temp_matrix += scipy.signal.convolve2d(inputs[i][k],self.kernels[j][k],mode="valid")
+                temp_matrix+=self.biases[j]
+                result[i][j]=temp_matrix
+                temp_matrix=np.zeros((3,3))
+        return result
 
     def grads_wrt_params(self, inputs, grads_wrt_outputs):
         """Calculates gradients with respect to layer parameters.
