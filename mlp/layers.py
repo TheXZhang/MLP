@@ -451,8 +451,11 @@ class ConvolutionalLayer(LayerWithParameters):
         Returns:
             outputs: Array of layer outputs of shape (batch_size, num_output_channels, output_height, output_width).
         """
-        temp_matrix=np.zeros((3,3))
-        result=np.zeros((2,2,3,3))
+
+        conv_shape=((self.input_height-self.kernel_height+1),(self.input_width-self.kernel_width+1))
+        temp_matrix=np.zeros(conv_shape)
+        result_shape=(inputs.shape[0],self.num_output_channels) + conv_shape
+        result=np.zeros(result_shape)
         for i in range(inputs.shape[0]):
             for j in range(inputs.shape[0]):
                 for k in range(inputs.shape[1]):
@@ -484,15 +487,17 @@ class ConvolutionalLayer(LayerWithParameters):
             (batch_size, num_input_channels, input_height, input_width).
         """
         # Pad the grads_wrt_outputs
-        temp_matrix=np.zeros((3,3))
-        result=np.zeros((2,2,3,3))
-        for i in range(inputs.shape[0]):
-            for j in range(inputs.shape[0]):
-                for k in range(inputs.shape[1]):
-                    temp_matrix += scipy.signal.convolve2d(inputs[i][k],self.kernels[j][k],mode="valid")
-                temp_matrix+=self.biases[j]
+        conv_shape=((grads_wrt_outputs.shape[2]-self.kernel_height+3),(grads_wrt_outputs.shape[3]-self.kernel_width+3))
+        temp_matrix=np.zeros(conv_shape)
+        result_shape=(grads_wrt_outputs.shape[0],self.kernels.shape[1]) + conv_shape
+        result=np.zeros(result_shape)
+
+        for i in range(grads_wrt_outputs.shape[0]):
+            for j in range(self.kernels.shape[1]):
+                for k in range(grads_wrt_outputs.shape[0]):
+                    temp_matrix += scipy.signal.convolve2d(grads_wrt_outputs[i][k],np.rot90(self.kernels[k][j],2),boundary="fill")
                 result[i][j]=temp_matrix
-                temp_matrix=np.zeros((3,3))
+                temp_matrix=np.zeros((4,4))
         return result
 
     def grads_wrt_params(self, inputs, grads_wrt_outputs):
@@ -507,7 +512,30 @@ class ConvolutionalLayer(LayerWithParameters):
             `[grads_wrt_kernels, grads_wrt_biases]`.
         """
         # Get inputs_col from previous fprop
-        raise NotImplementedError
+        conv_shape=((self.input_height-self.kernel_height+1),(self.input_width-self.kernel_width+1))
+        temp_matrix=np.zeros(conv_shape)
+        result_shape=(inputs.shape[0],self.num_output_channels) + conv_shape
+        result=np.zeros(result_shape)
+
+
+        temp_matrix=np.zeros((2,2))
+        result=np.zeros((2,3,2,2))
+        for i in range(inputs.shape[0]):
+            for j in range(inputs.shape[1]):
+                for k in range(inputs.shape[0]):
+                    temp_matrix +=scipy.signal.convolve2d(inputs[k][j],np.rot90(grads_wrt_outputs[k][i],2),mode="valid")
+                result[i][j]=np.rot90(temp_matrix,2)
+                temp_matrix=np.zeros((2,2))
+
+        temp_bias=0
+        new_biases=np.arange(self.kernels.shape[0])
+        for i in range(grads_wrt_outputs.shape[1]):
+            for j in range(grads_wrt_outputs.shape[0]):
+                temp_bias +=np.sum(grads_wrt_outputs[j][i])
+            new_biases[i]=temp_bias
+            temp_bias=0
+
+        return [result,new_biases]
 
     def params_penalty(self):
         """Returns the parameter dependent penalty term for this layer.
