@@ -151,8 +151,8 @@ class ConvolutionalProcessingBlock(nn.Module):
         self.padding = padding
         self.bias = bias
         self.dilation = dilation
-        self.bn0 = nn.BatchNorm1d(self.num_filters)
-        self.bn1 = nn.BatchNorm1d(self.num_filters)
+        self.bn0 = nn.BatchNorm2d(self.num_filters)
+        self.bn1 = nn.BatchNorm2d(self.num_filters)
 
         self.build_module()
 
