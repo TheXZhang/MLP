@@ -201,6 +201,9 @@ class ConvolutionalDimensionalityReductionBlock(nn.Module):
         self.dilation = dilation
         self.reduction_factor = reduction_factor
         self.build_module()
+        self.bn0 = nn.BatchNorm2d(self.num_filters)
+        self.bn1 = nn.BatchNorm2d(self.num_filters)
+
 
     def build_module(self):
         self.layer_dict = nn.ModuleDict()
@@ -229,12 +232,12 @@ class ConvolutionalDimensionalityReductionBlock(nn.Module):
         out = x
 
         out = self.layer_dict['conv_0'].forward(out)
-        out = F.leaky_relu(out)
+        out = F.leaky_relu(self.bn0(out))
 
         out = F.avg_pool2d(out, self.reduction_factor)
 
         out = self.layer_dict['conv_1'].forward(out)
-        out = F.leaky_relu(out)
+        out = F.leaky_relu(self.bn0(out))
 
         return out
 
