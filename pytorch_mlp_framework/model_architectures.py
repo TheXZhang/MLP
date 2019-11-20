@@ -151,12 +151,11 @@ class ConvolutionalProcessingBlock(nn.Module):
         self.padding = padding
         self.bias = bias
         self.dilation = dilation
-        self.bn0 = nn.BatchNorm2d(self.num_filters)
-        self.bn1 = nn.BatchNorm2d(self.num_filters)
-
         self.build_module()
 
     def build_module(self):
+        self.bn0 = nn.BatchNorm2d(self.num_filters)
+        self.bn1 = nn.BatchNorm2d(self.num_filters)
         self.layer_dict = nn.ModuleDict()
         x = torch.zeros(self.input_shape)
         out = x
@@ -201,11 +200,11 @@ class ConvolutionalDimensionalityReductionBlock(nn.Module):
         self.dilation = dilation
         self.reduction_factor = reduction_factor
         self.build_module()
-        self.bn0 = nn.BatchNorm2d(self.num_filters)
-        self.bn1 = nn.BatchNorm2d(self.num_filters)
 
 
     def build_module(self):
+        self.bn0 = nn.BatchNorm2d(self.num_filters)
+        self.bn1 = nn.BatchNorm2d(self.num_filters)
         self.layer_dict = nn.ModuleDict()
         x = torch.zeros(self.input_shape)
         out = x
