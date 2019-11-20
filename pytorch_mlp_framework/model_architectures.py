@@ -151,6 +151,8 @@ class ConvolutionalProcessingBlock(nn.Module):
         self.padding = padding
         self.bias = bias
         self.dilation = dilation
+        self.bn0 = nn.BatchNorm1d(self.num_filters)
+        self.bn1 = nn.BatchNorm1d(self.num_filters)
 
         self.build_module()
 
@@ -179,10 +181,10 @@ class ConvolutionalProcessingBlock(nn.Module):
         out = x
 
         out = self.layer_dict['conv_0'].forward(out)
-        out = F.leaky_relu(out)
+        out = F.leaky_relu(bn0(out))
 
         out = self.layer_dict['conv_1'].forward(out)
-        out = F.leaky_relu(out)
+        out = F.leaky_relu(bn1(out))
 
         return out
 
