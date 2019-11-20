@@ -181,10 +181,10 @@ class ConvolutionalProcessingBlock(nn.Module):
         out = x
 
         out = self.layer_dict['conv_0'].forward(out)
-        out = F.leaky_relu(bn0(out))
+        out = F.leaky_relu(self.bn0(out))
 
         out = self.layer_dict['conv_1'].forward(out)
-        out = F.leaky_relu(bn1(out))
+        out = F.leaky_relu(self.bn1(out))
 
         return out
 
