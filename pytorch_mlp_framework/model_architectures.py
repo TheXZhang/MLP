@@ -226,7 +226,7 @@ class ConvolutionalDimensionalityReductionBlock(nn.Module):
                                               kernel_size=self.kernel_size, dilation=self.dilation,
                                               padding=self.padding, stride=1)
 
-        temp_layer=nn.Conv2d(in_channels=out.shape[1], out_channels=self.num_filters,kernel_size=1,stride=2)
+        self.temp_layer=nn.Conv2d(in_channels=out.shape[1], out_channels=self.num_filters,kernel_size=1,stride=2)
         identity=temp_layer(identity)
         out = self.layer_dict['conv_1'].forward(out)
         out +=identity
@@ -243,8 +243,7 @@ class ConvolutionalDimensionalityReductionBlock(nn.Module):
 
         out = F.avg_pool2d(out, self.reduction_factor)
 
-        temp_layer=nn.Conv2d(in_channels=out.shape[1], out_channels=self.num_filters,kernel_size=1,stride=2)
-        identity=temp_layer(identity)
+        identity=self.temp_layer(identity)
         out = self.layer_dict['conv_1'].forward(out)
         out +=identity
         out = F.leaky_relu(self.bn1(out))
