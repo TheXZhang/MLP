@@ -17,7 +17,7 @@ transform_train = transforms.Compose([
         transforms.RandomCrop(32, padding=4),
         transforms.RandomHorizontalFlip(),
         transforms.ToTensor(),
-        transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
+        transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010))
     ])
 
 transform_test = transforms.Compose([
@@ -53,7 +53,7 @@ elif args.block_type == 'BN_block':
     dim_reduction_block_type = BNDimensionalityReductionBlock
 elif args.block_type == 'ResNet_BN_block':
     processing_block_type = ResNetBNProcessingBlock
-    dim_reduction_block_type = ResNetBNDimensionalityReductionBlock    
+    dim_reduction_block_type = ResNetBNDimensionalityReductionBlock
 
 else:
     raise ModuleNotFoundError

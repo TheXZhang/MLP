@@ -449,6 +449,7 @@ class ResNetBNProcessingBlock(nn.Module):
     def build_module(self):
         self.bn0 = nn.BatchNorm2d(self.num_filters)
         self.bn1 = nn.BatchNorm2d(self.num_filters)
+        self.RanErase=torch
         self.layer_dict = nn.ModuleDict()
 
         x = torch.zeros(self.input_shape)
@@ -467,8 +468,8 @@ class ResNetBNProcessingBlock(nn.Module):
 
 
         out = self.layer_dict['conv_1'].forward(out)
-        out += identity
         out = F.leaky_relu(self.bn1(out))
+        out += identity
 
         print(out.shape)
 
@@ -479,8 +480,8 @@ class ResNetBNProcessingBlock(nn.Module):
         out = F.leaky_relu(self.bn0(out))
 
         out = self.layer_dict['conv_1'].forward(out)
-        out += identity
         out = F.leaky_relu(self.bn1(out))
+        out += identity
 
         return out
 
@@ -522,8 +523,8 @@ class ResNetBNDimensionalityReductionBlock(nn.Module):
         self.temp_layer=nn.Conv2d(in_channels=out.shape[1], out_channels=self.num_filters,kernel_size=1,stride=2)
         identity=selftemp_layer(identity)
         out = self.layer_dict['conv_1'].forward(out)
-        out +=identity
         out = F.leaky_relu(self.bn1(out))
+        out +=identity
 
         print(out.shape)
 
@@ -538,8 +539,8 @@ class ResNetBNDimensionalityReductionBlock(nn.Module):
 
         identity=self.temp_layer(identity)
         out = self.layer_dict['conv_1'].forward(out)
-        out +=identity
         out = F.leaky_relu(self.bn1(out))
+        out +=identity
 
         return out
 
@@ -581,8 +582,8 @@ class ResNetDimensionalityReductionBlock(nn.Module):
         self.temp_layer=nn.Conv2d(in_channels=out.shape[1], out_channels=self.num_filters,kernel_size=1,stride=2)
         identity=self.temp_layer(identity)
         out = self.layer_dict['conv_1'].forward(out)
-        out +=identity
         out = F.leaky_relu(out)
+        out +=identity
 
         print(out.shape)
 
@@ -597,8 +598,8 @@ class ResNetDimensionalityReductionBlock(nn.Module):
 
         identity=self.temp_layer(identity)
         out = self.layer_dict['conv_1'].forward(out)
-        out +=identity
         out = F.leaky_relu(out)
+        out +=identity
 
         return out
 
@@ -633,8 +634,8 @@ class ResNetProcessingBlock(nn.Module):
 
 
         out = self.layer_dict['conv_1'].forward(out)
-        out += identity
         out = F.leaky_relu(out)
+        out +=identity
 
         print(out.shape)
 
@@ -645,7 +646,7 @@ class ResNetProcessingBlock(nn.Module):
         out = F.leaky_relu(out)
 
         out = self.layer_dict['conv_1'].forward(out)
-        out += identity
         out = F.leaky_relu(out)
+        out +=identity
 
         return out
