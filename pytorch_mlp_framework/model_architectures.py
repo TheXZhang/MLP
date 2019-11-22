@@ -521,7 +521,7 @@ class ResNetBNDimensionalityReductionBlock(nn.Module):
                                               padding=self.padding, stride=1)
 
         self.temp_layer=nn.Conv2d(in_channels=out.shape[1], out_channels=self.num_filters,kernel_size=1,stride=2)
-        identity=selftemp_layer(identity)
+        identity=self.temp_layer(identity)
         out = self.layer_dict['conv_1'].forward(out)
         out = F.leaky_relu(self.bn1(out))
         out +=identity
