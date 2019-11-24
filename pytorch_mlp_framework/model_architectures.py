@@ -26,6 +26,7 @@ class FCCNetwork(nn.Module):
         self.build_module()
 
     def build_module(self):
+        self.dropout = nn.Dropout(p=0.5)
         print("Building basic block of FCCNetwork using input shape", self.input_shape)
         x = torch.zeros((self.input_shape))
 
@@ -40,7 +41,7 @@ class FCCNetwork(nn.Module):
                                                             bias=self.use_bias)
 
             out = self.layer_dict['fcc_{}'.format(i)](out)  # apply ith fcc layer to the previous layers outputs
-            out = F.relu(out)  # apply a ReLU on the outputs
+            out = self.dropout(F.relu(out))  # apply a ReLU on the outputs
 
         self.logits_linear_layer = nn.Linear(in_features=out.shape[1],  # initialize the prediction output linear layer
                                              out_features=self.num_output_classes,
@@ -62,7 +63,7 @@ class FCCNetwork(nn.Module):
 
         for i in range(self.num_layers):
             out = self.layer_dict['fcc_{}'.format(i)](out)  # apply ith fcc layer to the previous layers outputs
-            out = F.relu(out)  # apply a ReLU on the outputs
+            out = self.dropout(F.relu(out))  # apply a ReLU on the outputs
 
         out = self.logits_linear_layer(out)  # apply the layer to the previous layer's outputs
         return out
