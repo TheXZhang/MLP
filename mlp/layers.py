@@ -525,13 +525,13 @@ class ConvolutionalLayer(LayerWithParameters):
                 result[i][j]=np.rot90(temp_matrix,2)
                 temp_matrix=np.zeros(conv_shape)
 
-        temp_bias=0
-        new_biases=np.arange(self.kernels.shape[0])
+        temp_bias=0.
+        new_biases=np.arange(self.kernels.shape[0], dtype="float64")
         for i in range(grads_wrt_outputs.shape[1]):
             for j in range(grads_wrt_outputs.shape[0]):
-                temp_bias +=np.sum(grads_wrt_outputs[j][i])
+                temp_bias +=np.sum(grads_wrt_outputs[j][i], dtype="float64")
             new_biases[i]=temp_bias
-            temp_bias=0
+            temp_bias=0.
 
         return [result,new_biases]
 
